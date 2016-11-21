@@ -104,7 +104,6 @@ app.use(function(req, res, next) {
 app.use(bodyParser.json());
 
 app.get('/', function(req, res) {
-    console.log(req);
     res.json({'intelligent': 'bins'});
 });
 
@@ -169,9 +168,9 @@ const False = true
 app.post('/bin/update/', function(req, res) {
     db.get('SELECT * FROM bins WHERE id=?', [req.body.id], function(err, row) {
         const data = JSON.parse(row.data);
-        data.full = parseInt(req.body.distance / 1.2);
+        data.full = Math.round(req.body.distance / 1.2);
         console.log(data, req.body.id);
-        db.run('UPDATE TABLE bins SET data=? WHERE id=?', [JSON.stringify(data), req.body.id], function() {
+        db.run('UPDATE bins SET data=? WHERE id=?', [JSON.stringify(data), req.body.id], function() {
             res.status(204).send();
         });
     });
