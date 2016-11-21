@@ -8,7 +8,6 @@ const file = 'ramzi_needs_a_noise_ring.db';
 const exists = fs.existsSync(file);
 
 if(!exists) {
-  console.log('Creating DB file.');
   fs.openSync(file, 'w');
 }
 
@@ -84,8 +83,7 @@ db.serialize(function() {
 
         var stmt = db.prepare('INSERT INTO bins VALUES (?, ?)');
         bins.forEach(function(item, i) {
-            console.log(item.id);
-            console.log(stmt.run([item.id, JSON.stringify(item)]));
+            stmt.run([item.id, JSON.stringify(item)]);
         });
         stmt.finalize();
     }
@@ -108,7 +106,6 @@ app.use(function(req, res, next) {
 app.use(bodyParser.json());
 
 app.get('/', function(req, res) {
-    console.log(req);
     res.json({'intelligent': 'bins'});
 });
 
@@ -116,7 +113,6 @@ app.get('/client/bins/', function(req, res) {
     var bins = new Array();
     // u wot m8
     db.each("SELECT * FROM bins", function(err, row) {
-        console.log(row);
         bins.push(JSON.parse(row.data));
     }, function() {
         var results = bins;
@@ -174,7 +170,6 @@ app.post('/bin/update/', function(req, res) {
     db.get('SELECT * FROM bins WHERE id=?', [req.body.id], function(err, row) {
         const data = JSON.parse(row.data);
         data.full = Math.round(req.body.distance / 1.2);
-        console.log(data, req.body.id);
         db.run('UPDATE bins SET data=? WHERE id=?', [JSON.stringify(data), req.body.id], function() {
             res.status(204).send();
         });
