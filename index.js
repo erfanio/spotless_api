@@ -134,12 +134,12 @@ function sqr_euclideon_distance(coord_1, coord_2) {
     return (d_x * d_x) + (d_y * d_y);
 }
 app.post('/client/closest/', function(req, res) {
-    let client_info = req.body;
-    let client_coord = client_info.coord;
-    let closest_bin = null;
-    let closest_distance = 9999999999999;
-    let closest_bin_notfull = null;
-    let closest_distance_notfull = 9999999999999;
+    var client_info = req.body;
+    var client_coord = client_info.coord;
+    var closest_bin = null;
+    var closest_distance = 9999999999999;
+    var closest_bin_notfull = null;
+    var closest_distance_notfull = 9999999999999;
     db.each("SELECT * FROM bins", function(err, row){
         const bin_info = JSON.parse(row.data);
         const distance = sqr_euclideon_distance(client_coord, bin_info.coord);
