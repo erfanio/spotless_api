@@ -17,69 +17,17 @@ var db = new sqlite3.Database(file);
 db.serialize(function() {
     if(!exists) {
         db.run('CREATE TABLE bins (id INTEGER, data TEXT)');
+        
+        var bins = new Array();
 
-        var bins = [
-            {
-                'id': 1,
-                'coord': [-37.813611, 144.963256],
-                'full': 10,
-                'level': 'G'
-            },
-            {
-                'id': 2,
-                'coord': [-37.813711, 144.963056],
-                'full': 40,
-                'level': '1'
-            },
-            {
-                'id': 3,
-                'coord': [-37.813711, 144.963456],
-                'full': 85,
-                'level': '1'
-            },
-            {
-                'id': 4,
-                'coord': [-37.813611, 144.963256],
-                'full': 10,
-                'level': 'G'
-            },
-            {
-                'id': 5,
-                'coord': [-37.813711, 144.963056],
-                'full': 40,
-                'level': '1'
-            },
-            {
-                'id': 6,
-                'coord': [-37.813711, 144.963456],
-                'full': 85,
-                'level': '1'
-            },
-            {
-                'id': 7,
-                'coord': [-37.813611, 144.963256],
-                'full': 10,
-                'level': 'G'
-            },
-            {
-                'id': 8,
-                'coord': [-37.813711, 144.963056],
-                'full': 40,
-                'level': '1'
-            },
-            {
-                'id': 9,
-                'coord': [-37.813711, 144.963456],
-                'full': 85,
-                'level': '1'
-            },
-            {
-                'id': 10,
-                'coord': [-37.813311, 144.963256],
-                'full': 99,
-                'level': '1'
-            }
-        ];
+        for (var i = 1; i <= 23; i++) {
+            bins.push({
+                'id': i,
+                'coord': [-37.813000 + (Math.random() / 1000), 144.963000 + (Math.random() / 1000)],
+                'full': Math.round(Math.random() * 100),
+                'level': 1
+            });
+        }
 
         var stmt = db.prepare('INSERT INTO bins VALUES (?, ?)');
         bins.forEach(function(item, i) {
