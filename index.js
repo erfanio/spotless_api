@@ -170,6 +170,7 @@ app.post('/bin/update/', function(req, res) {
     db.get('SELECT * FROM bins WHERE id=?', [req.body.id], function(err, row) {
         const data = JSON.parse(row.data);
         data.full = Math.round(req.body.distance / 1.2);
+        console.log(data, req.body.id);
         db.run('UPDATE bins SET data=? WHERE id=?', [JSON.stringify(data), req.body.id], function() {
             res.status(204).send();
         });
