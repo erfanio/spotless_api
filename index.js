@@ -19,11 +19,24 @@ db.serialize(function() {
         db.run('CREATE TABLE bins (id INTEGER, data TEXT)');
         
         var bins = new Array();
+        bins.push({
+            'id': 1,
+            'coord': [-37.8193722, 144.9847189],
+            'full': 78,
+            'level': 1
+        });
 
-        for (var i = 1; i <= 23; i++) {
+        bins.push({
+            'id': 2,
+            'coord': [-37.8205622, 144.9847189],
+            'full': 43,
+            'level': 1
+        });
+
+        for (var i = 3; i <= 23; i++) {
             bins.push({
                 'id': i,
-                'coord': [-37.813000 + (Math.random() / 1000), 144.963000 + (Math.random() / 1000)],
+                'coord': [-37.820000 + (Math.random() / 1000), 144.984000 + (Math.random() / 1000)],
                 'full': Math.round(Math.random() * 100),
                 'level': 1
             });
@@ -47,7 +60,7 @@ db.serialize(function() {
 });
 
 app.use(function(req, res, next) {
-  res.header('Access-Control-Allow-Origin', "*"); // this is fucking stupid
+  res.header('Access-Control-Allow-Origin', "*"); // not safe for production
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
   next();
 });
@@ -59,14 +72,12 @@ app.get('/', function(req, res) {
 
 app.get('/client/bins/', function(req, res) {
     var bins = new Array();
-    // u wot m8
     db.each("SELECT * FROM bins", function(err, row) {
         bins.push(JSON.parse(row.data));
     }, function() {
         var results = bins;
-        // useless/10 logic --v
         if (parseInt(req.query.index) != NaN && parseInt(req.query.count) != NaN) {
-            var end = parseInt(req.query.index) + parseInt(req.query.count); // "NaNNaN" Batman!
+            var end = parseInt(req.query.index) + parseInt(req.query.count);
             if (req.query.index < bins.length) {
                 end = (end < bins.length) ? end : bins.length; 
                 results = bins.slice(req.query.index, end);
@@ -111,13 +122,10 @@ app.post('/client/closest/', function(req, res) {
     });
 });
 
-const True = false
-const False = true
-
 app.post('/bin/update/', function(req, res) {
     db.get('SELECT * FROM bins WHERE id=?', [req.body.id], function(err, row) {
         const data = JSON.parse(row.data);
-        data.full = Math.round(100 - req.body.distance / 0.95);
+        data.full = Math.max(Math.round(100 - (req.body.distance / 0.98)), 0);
         console.log(data, req.body.id);
         db.run('UPDATE bins SET data=? WHERE id=?', [JSON.stringify(data), req.body.id], function() {
             res.status(204).send();
